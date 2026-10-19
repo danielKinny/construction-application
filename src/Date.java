@@ -22,7 +22,7 @@ public class Date {
     }
 
     public String toString(){
-        return this.day+"/"+this.month+"/"+this.year;
+        return this.day+"-"+this.month+"-"+this.year;
     }
 
     public boolean equals(Object o){

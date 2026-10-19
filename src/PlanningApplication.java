@@ -1,7 +1,6 @@
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Arrays;
 
 public static void main(String[] args){
 
@@ -17,29 +16,31 @@ public static void main(String[] args){
             Address jobAddress = new Address(addressData[0], Integer.parseInt(addressData[1]), addressData[2], addressData[3]);
             String desc = scanner.nextLine().strip();
 
-            String[] equipment = scanner.nextLine().strip().split(";");
+            String[] equipment = scanner.nextLine().strip().split(";"); //line of all equipment, split by each piece of equipment
             String[] equipmentString;
 
             List<Equipment> reqEquipment = new ArrayList<Equipment>();
 
-            for(String equipmentS : equipment){
+            for(String equipmentS : equipment){ //iterating through each piece of equipment
 
-                equipmentString = equipmentS.split(", ");
+                equipmentString = equipmentS.split(", "); //split between desc and actual thing
                 String equipmentDesc = equipmentString.length>1 ? equipmentString[1] : "";
 
-                switch(equipmentString[0]){
-                    case ("JackHammer"):
-                        reqEquipment.add(new JackHammer(equipmentDesc));
-                        break;
-                    case ("ConcreteMixer"):
-                        reqEquipment.add(new ConcreteMixer(equipmentDesc));
-                        break;
-                    case ("ScaffoldingTower"):
-                        reqEquipment.add(new ScaffoldingTower(equipmentDesc));
-                        break;
-                    case("Torch"):
-                        reqEquipment.add(new Torch(equipmentDesc));
+                {
+                    switch (equipmentString[0].trim()) {
+                        case ("JackHammer"):
+                            reqEquipment.add(new JackHammer(equipmentDesc));
+                            break;
+                        case ("ConcreteMixer"):
+                            reqEquipment.add(new ConcreteMixer(equipmentDesc));
+                            break;
+                        case ("Scaffolding"):
+                            reqEquipment.add(new ScaffoldingTower(equipmentDesc));
+                            break;
+                        case ("Torch"):
+                            reqEquipment.add(new Torch(equipmentDesc));
 
+                    }
                 }
 
             }
@@ -132,6 +133,59 @@ public static void main(String[] args){
                 break;
 
         }
+
+        // logic for file writing
+
+        /**
+         *Mekelweg; 4; 2628CD; Delft
+         *Construct a new bathroom on the 8th floor.
+         *JackHammer, A hardened chisel for reinforced floors; ConcreteMixer, None;
+         *24-10-2021
+         */
+    try{
+        FileWriter fw = new FileWriter("joblist.txt");
+        List<Job> jobList = jobCatalog.getJobs();
+        for(int i = 0; i<jobCatalog.getJobs().size(); i++){
+
+            String addressString = jobList.get(i).getLocation().getStreet() + "; " +
+                                jobList.get(i).getLocation().getNumber()+ "; " +
+                                jobList.get(i).getLocation().getZipCode()+ "; " +
+                                jobList.get(i).getLocation().getCity() + "\n"
+                                ;
+
+            String equipmentString = "";
+
+            for (Equipment e : jobList.get(i).getRequiredEquipment()){
+                switch(e.getClass().toString()){
+
+                    case "class ScaffoldingTower" :
+                        equipmentString += "Scaffolding, "+e.getRequirements() +"; ";
+                        break;
+                    case "class Torch" :
+                        equipmentString += "Torch, "+e.getRequirements() +"; ";
+                        break;
+                    case "class JackHammer" :
+                        equipmentString += "JackHammer, "+e.getRequirements() +"; ";
+                        break;
+                    case "class ConcreteMixer" :
+                        equipmentString += "ConcreteMixer, "+e.getRequirements() +"; ";
+                        break;
+                }
+            }
+
+            equipmentString = equipmentString.trim() + "\n";
+
+            String dateString = jobList.get(i).getPlannedDate().toString() + (i==jobList.size()-1 ? "": "\n");
+            fw.write(addressString+jobList.get(i).getDescription()+"\n"+equipmentString+dateString);
+
+        }
+
+        fw.close();
+
+    } catch (Exception e){
+        System.out.println(e.getMessage());
+    }
+
 
     }
 
