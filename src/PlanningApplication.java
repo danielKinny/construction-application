@@ -2,7 +2,7 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
-public static void main(String[] args){
+void main(String[] args){
 
     JobCatalog jobCatalog = new JobCatalog();
 
